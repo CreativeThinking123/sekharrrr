@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LOVE.exe</title>
 
 <style>
@@ -14,6 +14,8 @@ body{
   overflow:hidden;
   text-align:center;
 }
+
+/* Scenes */
 .scene{
   position:absolute;
   inset:0;
@@ -23,6 +25,8 @@ body{
   flex-direction:column;
 }
 .scene.active{display:flex}
+
+/* Buttons */
 button{
   padding:12px 26px;
   border:none;
@@ -32,14 +36,26 @@ button{
   background:#ff4d6d;
   color:white;
   margin:10px;
+  transition:.2s;
 }
+button:hover{transform:scale(1.05)}
+
+/* Image */
 img{
   width:90%;
-  max-width:420px;
+  max-width:380px;
   border-radius:18px;
   margin-top:20px;
-  box-shadow:0 25px 70px rgba(0,0,0,0.7);
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  animation: zoomIn 1.2s ease;
 }
+
+@keyframes zoomIn{
+  from{opacity:0;transform:scale(.8)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* Canvas */
 canvas{
   position:fixed;
   inset:0;
@@ -53,180 +69,129 @@ canvas{
 <canvas id="c"></canvas>
 
 <!-- SCENE 1 -->
-<div id="terminal" class="scene active"></div>
+<div id="scene1" class="scene active">
+  <h2>Initializing LOVE.exe...</h2>
+  <p>Loading emotions...</p>
+</div>
 
 <!-- SCENE 2 -->
-<div id="question" class="scene">
+<div id="scene2" class="scene">
   <h1>Sheryasi ❤️</h1>
-  <p>Sekhar Kalyampudi has one important question for you…</p>
   <h2>Will you be my Valentine?</h2>
-  <div>
-    <button onclick="yesValentine()">YES</button>
-    <button id="noBtn" onmouseover="escapeNo()">NO</button>
-  </div>
+  <button onclick="yes()">YES 💖</button>
+  <button id="noBtn" onmouseover="runAway()">NO 😜</button>
 </div>
 
 <!-- SCENE 3 -->
-<div id="final" class="scene">
-  <h1>Thank you, Sheryasi 💖</h1>
-  <p>❤️ HEART LOCKED 🔐</p>
-  <button onclick="showSurpriseQ()">Continue</button>
+<div id="scene3" class="scene">
+  <h1>Thank you Sheryasi 💕</h1>
+  <p>❤️ Heart Locked by Sekhar Kalyampudi 🔐</p>
+  <button onclick="nextScene()">Continue ➜</button>
 </div>
 
 <!-- SCENE 4 -->
-<div id="surpriseQ" class="scene">
+<div id="scene4" class="scene">
   <h2>Do you want a surprise? 😏</h2>
-  <div>
-    <button onclick="revealImage()">YES</button>
-    <button onmouseover="funnyNo()">NO</button>
-  </div>
-  <div id="msg"></div>
+  <button onclick="showImage()">YES 🎁</button>
+  <button onmouseover="funnyNo()">NO 🙈</button>
+  <p id="msg" style="color:#ffb3c1"></p>
 </div>
 
-<!-- SCENE 5 -->
-<div id="imageScene" class="scene">
+<!-- SCENE 5 (IMAGE) -->
+<div id="scene5" class="scene">
   <h2>Just for you 💖</h2>
-  <img src="sekhar1.jpeg" alt="Surprise">
+  <img src="sekhar1.png" alt="photo">
 </div>
 
 <script>
-const boyName="Sekhar Kalyampudi";
-const girlName="Sheryasi";
 
-/* TERMINAL */
-const lines=[
- "Initializing LOVE.exe...",
- "Loading emotions...",
- `User detected: ${girlName}`,
- `Started by: ${boyName}`,
- "Launching experience..."
+/* SCENE AUTO START */
+setTimeout(()=>switchScene("scene2"),2000);
+
+/* SCENE SWITCH */
+function switchScene(id){
+  document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* YES FLOW */
+function yes(){
+  startLove3D();
+  switchScene("scene3");
+}
+
+function nextScene(){
+  switchScene("scene4");
+}
+
+function showImage(){
+  switchScene("scene5");
+}
+
+/* NO BUTTON ESCAPE */
+function runAway(){
+  const btn=document.getElementById("noBtn");
+  btn.style.position="absolute";
+  btn.style.left=Math.random()*80+"vw";
+  btn.style.top=Math.random()*80+"vh";
+}
+
+/* FUNNY NO MESSAGES */
+const msgs=[
+  "Nice try 😄",
+  "NO option disabled 😜",
+  "You cannot escape 😏",
+  "System says YES only ❤️",
+  "Error 404: NO not found ❌"
 ];
-let i=0;
-const terminal=document.getElementById("terminal");
-
-function boot(){
- if(i<lines.length){
-   terminal.textContent+=lines[i]+"\n";
-   i++;
-   setTimeout(boot,600);
- } else setTimeout(()=>showScene("question"),1000);
-}
-boot();
-
-function showScene(id){
- document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
-}
-
-function escapeNo(){
- const btn=document.getElementById("noBtn");
- btn.style.position="absolute";
- btn.style.left=Math.random()*80+"vw";
- btn.style.top=Math.random()*80+"vh";
-}
-
-function yesValentine(){
- startParticles();
- showScene("final");
-}
-
-function showSurpriseQ(){ showScene("surpriseQ"); }
-
-const funnyMsgs=["Nice try 😄","NO not allowed 😜","Curiosity wins 😉"];
 function funnyNo(){
- document.getElementById("msg").textContent =
- funnyMsgs[Math.floor(Math.random()*funnyMsgs.length)];
+  document.getElementById("msg").textContent =
+  msgs[Math.floor(Math.random()*msgs.length)];
 }
 
-function revealImage(){ showScene("imageScene"); }
-
-/* 💖 VALENTINE PARTICLES */
+/* ================== 3D LOVE FALLING ================== */
 const canvas=document.getElementById("c");
 const ctx=canvas.getContext("2d");
 
 function resize(){
- canvas.width=innerWidth;
- canvas.height=innerHeight;
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 }
-resize(); window.onresize=resize;
+resize();
+window.onresize=resize;
 
-const emojis=["❤️","💖","💘","💞","💕","💗","💓","💝","💟","💌","🌹","✨","💍"];
-const nameText="Sheryasi ❤️ Sekhar";
+let items=[];
+const emojis=["❤️","💖","💘","💕","💞"];
 
-let particles=[];
-let mode="normal";
-
-function startParticles(){
- particles=[];
- mode="normal";
-
- for(let i=0;i<100;i++){
-   particles.push({
-     x:Math.random()*canvas.width,
-     y:Math.random()*canvas.height,
-     z:Math.random()*500,
-     e:emojis[Math.floor(Math.random()*emojis.length)]
-   });
- }
-
- animate();
-
- setTimeout(formName,3000);
- setTimeout(celebration,6000);
+function startLove3D(){
+  items=[];
+  for(let i=0;i<80;i++){
+    items.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      z:Math.random()*500,
+      s:Math.random()*2+0.5,
+      e:emojis[Math.floor(Math.random()*emojis.length)]
+    });
+  }
+  animate3D();
 }
 
-function formName(){
- mode="name";
- particles=[];
+function animate3D(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  items.forEach(p=>{
+    p.z-=p.s*6;
+    if(p.z<0) p.z=500;
 
- const gap=18;
- const startX=canvas.width/2-(nameText.length*gap)/2;
- const y=canvas.height/2;
+    const scale=300/(300+p.z);
+    const x=(p.x-canvas.width/2)*scale+canvas.width/2;
+    const y=(p.y-canvas.height/2)*scale+canvas.height/2;
+    const size=22*scale;
 
- for(let i=0;i<nameText.length;i++){
-   particles.push({x:startX+i*gap,y:y,z:200,e:nameText[i]});
- }
-}
-
-function celebration(){
- mode="burst";
- for(let i=0;i<150;i++){
-   particles.push({
-     x:canvas.width/2,
-     y:canvas.height/2,
-     z:Math.random()*200+100,
-     e:emojis[Math.floor(Math.random()*emojis.length)],
-     vx:(Math.random()-0.5)*6,
-     vy:(Math.random()-0.5)*6
-   });
- }
-}
-
-function animate(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
- ctx.textAlign="center";
- ctx.textBaseline="middle";
-
- particles.forEach(p=>{
-   if(mode==="normal"){
-     p.z-=3;
-     if(p.z<=0)p.z=500;
-   }
-   if(mode==="burst"){
-     p.x+=p.vx;
-     p.y+=p.vy;
-     p.z-=1;
-   }
-
-   const scale=200/p.z;
-   const x=(p.x-canvas.width/2)*scale+canvas.width/2;
-   const y=(p.y-canvas.height/2)*scale+canvas.height/2;
-
-   ctx.font=`${22*scale}px Arial`;
-   ctx.fillText(p.e,x,y);
- });
-
- requestAnimationFrame(animate);
+    ctx.font=size+"px serif";
+    ctx.fillText(p.e,x,y);
+  });
+  requestAnimationFrame(animate3D);
 }
 </script>
 
